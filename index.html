@@ -9,20 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Preload de recursos críticos -->
-  <link rel="preload" href="Captura de pantalla 2025-10-01 a las 20.05.53.png" as="image">
-  <link rel="preload" href="IMG_1729.jpg" as="image">
-  <link rel="preload" href="copy_626D61D7-74D5-4840-BA83-9020C66D530B.MOV" as="video">
-  
-  <!-- Preload de todas las imágenes de la galería -->
-  <link rel="preload" href="IMG_1729.jpg" as="image">
-  <link rel="preload" href="IMG_1733.jpg" as="image">
-  <link rel="preload" href="IMG_1734.jpg" as="image">
-  <link rel="preload" href="IMG_1735.jpg" as="image">
-  <link rel="preload" href="IMG_1737.jpg" as="image">
-  <link rel="preload" href="IMG_1738.jpg" as="image">
-  <link rel="preload" href="IMG_1739.jpg" as="image">
-  <link rel="preload" href="IMG_1740.jpg" as="image">
-  <link rel="preload" href="IMG_1742.jpg" as="image">
+  <link rel="preload" href="Captura de pantalla 2025-10-01 a las 20.05.53.png" as="image" fetchpriority="high">
+  <link rel="preload" href="IMG_1729.jpg" as="image" fetchpriority="high">
+  <link rel="preload" href="copy_626D61D7-74D5-4840-BA83-9020C66D530B.MOV" as="video" fetchpriority="high">
   
   <style>
     :root {
@@ -277,36 +266,38 @@
     }
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 16px;
       margin-top: 16px;
     }
     @media (min-width: 768px) {
       .gallery {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 20px;
         margin-top: 20px;
       }
     }
     .gallery-img {
       width: 100%;
-      height: auto;
-      aspect-ratio: 4/3;
-      object-fit: cover;
+      height: 280px;
+      object-fit: contain;
       border-radius: 12px;
       background: var(--gris-claro);
       transition: all 0.3s ease;
       opacity: 1;
       border: 1px solid var(--gris-medio);
       box-shadow: 0 4px 16px var(--shadow);
+      padding: 8px;
     }
     @media (min-width: 768px) {
       .gallery-img {
+        height: 320px;
         border-radius: 16px;
+        padding: 12px;
       }
     }
     .gallery-img:hover {
-      transform: scale(1.05);
+      transform: scale(1.03);
       border-color: var(--azul-primario);
       box-shadow: 0 8px 24px rgba(30, 136, 229, 0.2);
     }
@@ -331,12 +322,8 @@
       height: auto;
       max-height: 500px;
       display: block;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      border-radius: 14px;
-    }
-    video.loaded {
       opacity: 1;
+      border-radius: 14px;
     }
     .video-placeholder {
       position: absolute;
@@ -547,6 +534,9 @@
       .gallery {
         grid-template-columns: 1fr;
       }
+      .gallery-img {
+        height: 240px;
+      }
     }
 
     /* Estilos para placeholders de carga */
@@ -578,11 +568,6 @@
       box-shadow: 0 16px 48px var(--shadow);
       margin: 0 auto 24px;
       border: 2px solid var(--gris-medio);
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-    
-    .product-image.loaded {
       opacity: 1;
     }
     
@@ -694,6 +679,12 @@
       font-weight: 600;
       font-size: 18px;
     }
+
+    /* Optimizaciones de carga */
+    .gallery-img, .product-image {
+      opacity: 1 !important;
+      animation: none !important;
+    }
   </style>
 </head>
 <body>
@@ -719,7 +710,7 @@
           
           <!-- Imagen principal de la pantalla -->
           <div class="main-product">
-            <img src="Captura de pantalla 2025-10-01 a las 20.05.53.png" alt="HUAWEI IdeaHub Board 3 PRO - Pantalla Interactiva" class="product-image" loading="eager" onload="this.classList.add('loaded')">
+            <img src="Captura de pantalla 2025-10-01 a las 20.05.53.png" alt="HUAWEI IdeaHub Board 3 PRO - Pantalla Interactiva" class="product-image" loading="eager" fetchpriority="high">
           </div>
           
           <div class="specs-grid">
@@ -767,7 +758,7 @@
           <p class="muted">Conoce nuestras implementaciones en instituciones educativas de vanguardia</p>
           
           <div class="gallery">
-            <img src="IMG_1729.jpg" alt="Pantalla interactiva en uso" class="gallery-img" loading="eager">
+            <img src="IMG_1729.jpg" alt="Pantalla interactiva en uso" class="gallery-img" loading="eager" fetchpriority="high">
             <img src="IMG_1733.jpg" alt="Profesor utilizando pantalla" class="gallery-img" loading="eager">
             <img src="IMG_1734.jpg" alt="Instalación completa" class="gallery-img" loading="eager">
             <img src="IMG_1735.jpg" alt="Sistema en funcionamiento" class="gallery-img" loading="eager">
@@ -779,11 +770,11 @@
           </div>
 
           <div class="video-container">
-            <div class="video-placeholder" id="videoPlaceholder">
+            <div class="video-placeholder hidden" id="videoPlaceholder">
               <span class="loading-spinner"></span>
               Cargando video demostrativo...
             </div>
-            <video preload="auto" controls oncanplay="this.classList.add('loaded'); document.getElementById('videoPlaceholder').classList.add('hidden')">
+            <video preload="auto" controls muted playsinline>
               <source src="copy_626D61D7-74D5-4840-BA83-9020C66D530B.MOV" type="video/mp4">
               Tu navegador no soporta la reproducción de video.
             </video>
@@ -853,10 +844,10 @@
   </div>
 
   <script>
-    // Precarga agresiva de imágenes y video
+    // Carga inmediata y optimizada
     document.addEventListener('DOMContentLoaded', function() {
-      // Precarga de imágenes críticas
-      const criticalImages = [
+      // Precarga agresiva de todas las imágenes
+      const images = [
         'Captura de pantalla 2025-10-01 a las 20.05.53.png',
         'IMG_1729.jpg',
         'IMG_1733.jpg',
@@ -869,11 +860,11 @@
         'IMG_1742.jpg'
       ];
       
-      criticalImages.forEach(src => {
+      images.forEach(src => {
         const img = new Image();
         img.src = src;
-        // Forzar carga inmediata
         img.fetchPriority = 'high';
+        img.loading = 'eager';
       });
 
       // Precarga del video
@@ -883,33 +874,29 @@
         video.load();
       }
 
-      // Mostrar contenido principal inmediatamente
-      document.body.style.visibility = 'visible';
+      // Mostrar todo inmediatamente
+      document.body.style.opacity = '1';
       
-      // Forzar renderizado de imágenes
-      const images = document.querySelectorAll('.gallery-img, .product-image');
-      images.forEach(img => {
+      // Forzar display inmediato de imágenes
+      const allImages = document.querySelectorAll('img');
+      allImages.forEach(img => {
+        img.style.opacity = '1';
         if (img.complete) {
-          img.style.opacity = '1';
+          img.style.visibility = 'visible';
         } else {
           img.onload = function() {
-            this.style.opacity = '1';
+            this.style.visibility = 'visible';
           };
         }
       });
     });
 
-    // Fallback para imágenes que no cargan
+    // Fallback mínimo para imágenes que no cargan
     window.addEventListener('load', function() {
-      const images = document.querySelectorAll('.gallery-img, .product-image');
+      const images = document.querySelectorAll('img');
       images.forEach(img => {
         if (!img.complete || img.naturalHeight === 0) {
-          img.style.display = 'none';
-          // Crear placeholder
-          const placeholder = document.createElement('div');
-          placeholder.className = 'image-placeholder';
-          placeholder.textContent = 'Imagen no disponible';
-          img.parentNode.insertBefore(placeholder, img);
+          console.log('Imagen no cargada:', img.src);
         }
       });
     });
