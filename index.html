@@ -324,21 +324,6 @@
       display: block;
       opacity: 1;
       border-radius: 14px;
-      cursor: pointer;
-    }
-    .video-controls {
-      position: absolute;
-      bottom: 15px;
-      left: 15px;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      z-index: 10;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     .benefits-grid {
       display: grid;
@@ -488,27 +473,6 @@
       ul.muted li {
         margin-bottom: 10px;
       }
-    }
-    
-    /* Animaciones */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .loading-spinner {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: var(--naranja);
-      animation: spin 1s ease-in-out infinite;
-      margin-right: 12px;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
     }
     
     /* Asegurar que todo quede dentro del viewport */
@@ -704,7 +668,6 @@
     /* Optimizaciones de carga */
     .gallery-img, .product-image {
       opacity: 1 !important;
-      animation: none !important;
     }
   </style>
 </head>
@@ -794,8 +757,7 @@
           </div>
 
           <div class="video-container">
-            <div class="video-controls" id="videoControls">🔊 Reproduciendo - Click para pausar</div>
-            <video id="demoVideo" autoplay muted loop playsinline>
+            <video id="demoVideo" autoplay muted loop playsinline preload="auto">
               <source src="copy_626D61D7-74D5-4840-BA83-9020C66D530B.MOV" type="video/mp4">
               Tu navegador no soporta la reproducción de video.
             </video>
@@ -888,50 +850,29 @@
         img.loading = 'eager';
       });
 
-      // Control del video
+      // Configuración ultra-rápida del video
       const video = document.getElementById('demoVideo');
-      const videoControls = document.getElementById('videoControls');
-
+      
       if (video) {
-        // Configurar video para autoplay con audio (aunque muted inicialmente)
-        video.muted = true; // Necesario para autoplay en la mayoría de navegadores
+        // Configuración mínima para carga rápida
+        video.preload = "auto";
         video.autoplay = true;
+        video.muted = true;
         video.loop = true;
         video.playsInline = true;
         
-        // Precargar video
-        video.preload = "auto";
+        // Forzar carga inmediata del video
+        video.load();
         
-        // Control de pausa/reproducción al hacer click
-        video.addEventListener('click', function() {
-          if (video.paused) {
-            video.play();
-            videoControls.textContent = '🔊 Reproduciendo - Click para pausar';
-          } else {
-            video.pause();
-            videoControls.textContent = '⏸️ Pausado - Click para reproducir';
-          }
+        // Evento para manejar cuando el video está listo
+        video.addEventListener('loadeddata', function() {
+          console.log('Video cargado y listo para reproducir');
         });
-
-        // También permitir pausa/reproducción desde los controles
-        videoControls.addEventListener('click', function(e) {
-          e.stopPropagation();
-          if (video.paused) {
-            video.play();
-            videoControls.textContent = '🔊 Reproduciendo - Click para pausar';
-          } else {
-            video.pause();
-            videoControls.textContent = '⏸️ Pausado - Click para reproducir';
-          }
+        
+        // Evento para manejar errores de carga
+        video.addEventListener('error', function() {
+          console.log('Error al cargar el video');
         });
-
-        // Intentar activar sonido después de la interacción del usuario
-        document.addEventListener('click', function() {
-          if (video.muted) {
-            video.muted = false;
-            video.volume = 0.5; // Volumen moderado
-          }
-        }, { once: true });
       }
 
       // Mostrar todo inmediatamente
@@ -951,14 +892,21 @@
       });
     });
 
-    // Fallback mínimo para imágenes que no cargan
+    // Precarga adicional cuando la página está cargando
     window.addEventListener('load', function() {
+      // Verificar que todas las imágenes cargaron
       const images = document.querySelectorAll('img');
       images.forEach(img => {
         if (!img.complete || img.naturalHeight === 0) {
           console.log('Imagen no cargada:', img.src);
         }
       });
+      
+      // Forzar reproducción del video si es necesario
+      const video = document.getElementById('demoVideo');
+      if (video && video.paused) {
+        video.play().catch(e => console.log('Video autoplay bloqueado:', e));
+      }
     });
   </script>
 </body>
